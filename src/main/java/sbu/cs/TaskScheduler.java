@@ -1,6 +1,8 @@
 package sbu.cs;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class TaskScheduler
@@ -23,10 +25,11 @@ public class TaskScheduler
 
         @Override
         public void run() {
-            /*
-            TODO
-                Simulate utilizing CPU by sleeping the thread for the specified processingTime
-             */
+            try{
+                Thread.sleep(processingTime);
+            }catch (InterruptedException ie) {
+                System.out.println(ie.getMessage());
+            }
         }
     }
 
@@ -41,6 +44,20 @@ public class TaskScheduler
             You have to wait for each task to get done and then start the next task.
             Don't forget to add each task's name to the finishedTasks after it's completely finished.
          */
+
+        tasks.sort(Comparator.comparing(t -> t.processingTime));
+        Collections.reverse(tasks);
+
+        for(var task : tasks) {
+            Thread thread = new Thread(task);
+            thread.start();
+            try{
+                thread.join();
+                finishedTasks.add(task.taskName);
+            }catch (InterruptedException ie) {
+                System.out.println(ie.getMessage());
+            }
+        }
 
         return finishedTasks;
     }
